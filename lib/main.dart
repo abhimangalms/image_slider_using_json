@@ -20,23 +20,21 @@ class CarouselDemo extends StatefulWidget {
 }
 
 class CarouselDemoState extends State<CarouselDemo> {
-
   List imgsList;
   var imageData = [];
   bool isLoaded = false;
+
   @override
-  void initState(){
-
-    callApi().then((imgListUrl) { //calling mathod using future
+  void initState() {
+    callApi().then((imgListUrl) {
+      //calling mathod using future
       setState(() {
-
         imageData = imgListUrl;
         isLoaded = true;
         print(imgListUrl);
       });
     });
     super.initState();
-
   }
 
   CarouselSlider carouselSlider;
@@ -53,110 +51,107 @@ class CarouselDemoState extends State<CarouselDemo> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: isLoaded ? createContainer() : Center(
-        child: CircularProgressIndicator(),
-      )
-    );
-  }
-
-  goToPrevious() {
-    carouselSlider.previousPage(
-        duration: Duration(milliseconds: 300), curve: Curves.ease);
-  }
-
-  goToNext() {
-    carouselSlider.nextPage(
-        duration: Duration(milliseconds: 300), curve: Curves.decelerate);
+        appBar: AppBar(
+          title: Text(widget.title),
+        ),
+        body: isLoaded
+            ? centerSliderContainer()
+            : Center(
+                child: CircularProgressIndicator(),
+              ));
   }
 
   Future<List<dynamic>> callApi() async {
-
     ApiCalls apiCalls = new ApiCalls();
     List imagesUrl = await apiCalls.getImageSliders();
 //    print(imagesUrl);
     return imagesUrl;
   }
 
-  Widget createContainer() {
+  Widget centerSliderContainer() {
     return Container(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          carouselSlider = CarouselSlider(
-            height: 200.0,
-            initialPage: 0,
-            enlargeCenterPage: true,
-            autoPlay: true,
-            reverse: false,
-            enableInfiniteScroll: true,
-            autoPlayInterval: Duration(seconds: 2),
-            autoPlayAnimationDuration: Duration(milliseconds: 2000),
-            pauseAutoPlayOnTouch: Duration(seconds: 10),
-            scrollDirection: Axis.horizontal,
-            onPageChanged: (index) {
-              setState(() {
-                _current = index;
-              });
-            },
-            items: imageData.map((imgUrl) {
-              return Builder(
-                builder: (BuildContext context) {
-                  return Container(
-                    width: MediaQuery.of(context).size.width,
-                    margin: EdgeInsets.symmetric(horizontal: 10.0),
-                    decoration: BoxDecoration(
-                      color: Colors.green,
-                    ),
-                    child: Image.network(
-                      imgUrl,
-                      fit: BoxFit.fill,
-                    ),
-                  );
-                },
-              );
-            }).toList(),
-          ),
-          SizedBox(
-            height: 20,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: map<Widget>(imageData, (index, url) {
-              return Container(
-                width: 10.0,
-                height: 10.0,
-                margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 2.0),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: _current == index ? Colors.redAccent : Colors.green,
-                ),
-              );
-            }),
-          ),
-          SizedBox(
-            height: 20.0,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              OutlineButton(
-                onPressed: goToPrevious,
-                child: Text("Prev"),
-              ),
-              OutlineButton(
-                onPressed: goToNext,
-                child: Text("Next"),
-              ),
-            ],
-          ),
-        ],
+      child: ConstrainedBox(
+        constraints: BoxConstraints(),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            CarouselSlider(
+              height: 300.0,
+              initialPage: 0,
+              autoPlay: true,
+              reverse: false,
+              enableInfiniteScroll: true,
+              autoPlayInterval: Duration(seconds: 3),
+              autoPlayAnimationDuration: Duration(milliseconds: 2000),
+              pauseAutoPlayOnTouch: Duration(seconds: 10),
+              scrollDirection: Axis.horizontal,
+              onPageChanged: (index) {
+                setState(() {
+                  _current = index;
+                });
+              },
+              items: imageData.map((imgUrl) {
+                return Builder(
+                  builder: (BuildContext context) {
+                    return Column(
+                      children: <Widget>[
+                        new Stack(
+                          children: <Widget>[
+                            new Card(
+                              child: Container(
+                                width: 500,
+                                height: 200,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                ),
+                                child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.stretch,
+                                    mainAxisSize: MainAxisSize.max,
+                                    children: <Widget>[
+                                      new Expanded(
+                                        child: Image.network(
+                                          imgUrl,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                      new Container(
+                                        alignment: Alignment.center,
+                                        margin: EdgeInsets.all(5.0),
+                                        child: Text(
+                                          "Movie name",
+                                          style: TextStyle(fontSize: 12.0),
+                                        ),
+                                      )
+                                    ]),
+                              ),
+                              semanticContainer: true,
+                              clipBehavior: Clip.antiAliasWithSaveLayer,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                              elevation: 8,
+                            ),
+                          ],
+                        ),
+//                        new Container(
+//                          alignment: Alignment.bottomLeft,
+//                          child: Text(
+//                            "Movie one",
+//                            style: TextStyle(
+//                                fontSize: 14.0, color: Colors.black),
+//                          ),
+//                        )
+                      ],
+                    );
+                  },
+                );
+              }).toList(),
+            ),
+          ],
+        ),
       ),
     );
   }
-
-
 }

@@ -28,14 +28,14 @@ class CommonFunctions {
 
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
 
-    if(sharedPreferences.containsKey("api_token")){
+//    if(sharedPreferences.containsKey("api_token")){
 
-      String api_token = sharedPreferences.getString("api_token"); //getting stored fcm token id from sharedPreferences
-      return api_token;
-    }
-    else{
-      return null;
-    }
+//      String api_token = sharedPreferences.getString("api_token"); //getting stored fcm token id from sharedPreferences
+//      return api_token;
+//    }
+//    else{
+//      return null;
+//    }
 
 
   }
